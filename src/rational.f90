@@ -134,6 +134,52 @@ module extlib_rational
     end interface
 
 contains
+    elemental function ordered_rationals(xn, xd, yn, yd) result(r)
+        integer, intent(in) :: xn, xd, yn, yd
+        logical :: r
+
+        logical :: l1, l2
+        integer :: n1, n2, d1, d2, w1, w2
+
+        l1 = xn >= 0
+        l2 = yn >= 0
+        if (l1 .neqv. l2) then
+            r = l2
+            return
+        else if (l1) then
+            n1 = xn
+            d1 = xd
+            n2 = yn
+            d2 = yd
+        else
+            n1 = -yn
+            d1 = yd
+            n2 = -xn
+            d2 = xd
+        end if
+        do
+            w1 = n1 / d1
+            w2 = n2 / d2
+            if (w1 /= w2) then
+                r = w1 < w2
+                return
+            end if
+            w1 = mod(n1, d1)
+            w2 = mod(n2, d2)
+            l1 = w1 == 0
+            l2 = w2 == 0
+            if (l1 .or. l2) then
+                r = l1 .and. .not. l2
+                return
+            end if
+            n1 = d2
+            n2 = d1
+            d1 = w2
+            d2 = w1
+        end do
+    end function ordered_rationals
+
+
     elemental subroutine canonicalize_Rational(x)
         class(Rational), intent(inout) :: x
 
@@ -227,7 +273,8 @@ contains
         class(Rational), intent(in) :: x, y
         logical :: r
 
-        r = x%n * y%d > x%d * y%n
+        ! r = x%n * y%d > x%d * y%n
+        r = ordered_rationals(y%n, y%d, x%n, x%d)
     end function Rational_gt_Rational
 
 
@@ -235,7 +282,8 @@ contains
         class(Rational), intent(in) :: x, y
         logical :: r
 
-        r = x%n * y%d < x%d * y%n
+        ! r = x%n * y%d < x%d * y%n
+        r = ordered_rationals(x%n, x%d, y%n, y%d)
     end function Rational_lt_Rational
 
 
@@ -243,7 +291,7 @@ contains
         class(Rational), intent(in) :: x, y
         logical :: r
 
-        r = x%n * y%d >= x%d * y%n
+        r = Rational_eq_Rational(x, y) .or. Rational_gt_Rational(x, y)
     end function Rational_ge_Rational
 
 
@@ -251,7 +299,7 @@ contains
         class(Rational), intent(in) :: x, y
         logical :: r
 
-        r = x%n * y%d <= x%d * y%n
+        r = Rational_eq_Rational(x, y) .or. Rational_lt_Rational(x, y)
     end function Rational_le_Rational
 
 

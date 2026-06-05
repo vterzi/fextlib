@@ -320,7 +320,7 @@ contains
         integer, intent(out) :: iostat
         character(len=*), intent(inout) :: iomsg
 
-        complex :: num
+        complex(kind(1.0d0)) :: num
 
         read(unit, *, iostat=iostat, iomsg=iomsg) num
         dtv%n = nint(real(num))

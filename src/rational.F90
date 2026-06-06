@@ -295,8 +295,11 @@ contains
         class(Rational), intent(in) :: x, y
         logical :: r
 
-        ! r = x%n * y%d > x%d * y%n
+#ifdef _FAST
+        r = x%n * y%d > x%d * y%n
+#else
         r = ordered_rationals(y%n, y%d, x%n, x%d)
+#endif
     end function Rational_gt_Rational
 
 
@@ -304,8 +307,11 @@ contains
         class(Rational), intent(in) :: x, y
         logical :: r
 
-        ! r = x%n * y%d < x%d * y%n
+#ifdef _FAST
+        r = x%n * y%d < x%d * y%n
+#else
         r = ordered_rationals(x%n, x%d, y%n, y%d)
+#endif
     end function Rational_lt_Rational
 
 
@@ -473,8 +479,11 @@ contains
         class(Rational), intent(in) :: x
         logical :: r
 
-        ! r = i * x%d > x%n
+#ifdef _FAST
+        r = i * x%d > x%n
+#else
         r = ordered_rational_integer(x%n, x%d, i)
+#endif
     end function I_gt_Rational
 
 
@@ -483,8 +492,11 @@ contains
         integer, intent(in) :: i
         logical :: r
 
-        ! r = x%n > i * x%d
+#ifdef _FAST
+        r = x%n > i * x%d
+#else
         r = ordered_integer_rational(i, x%n, x%d)
+#endif
     end function Rational_gt_I
 
 
@@ -493,8 +505,11 @@ contains
         class(Rational), intent(in) :: x
         logical :: r
 
-        ! r = i * x%d < x%n
+#ifdef _FAST
+        r = i * x%d < x%n
+#else
         r = ordered_integer_rational(i, x%n, x%d)
+#endif
     end function I_lt_Rational
 
 
@@ -503,8 +518,11 @@ contains
         integer, intent(in) :: i
         logical :: r
 
-        ! r = x%n < i * x%d
+#ifdef _FAST
+        r = x%n < i * x%d
+#else
         r = ordered_rational_integer(x%n, x%d, i)
+#endif
     end function Rational_lt_I
 
 

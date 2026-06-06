@@ -139,7 +139,7 @@ contains
         logical :: r
 
         logical :: l1, l2
-        integer :: n1, n2, d1, d2, w1, w2
+        integer :: n1, n2, d1, d2, i1, i2
 
         l1 = xn >= 0
         l2 = yn >= 0
@@ -158,24 +158,24 @@ contains
             d2 = xd
         end if
         do
-            w1 = n1 / d1
-            w2 = n2 / d2
-            if (w1 /= w2) then
-                r = w1 < w2
+            i1 = n1 / d1
+            i2 = n2 / d2
+            if (i1 /= i2) then
+                r = i1 < i2
                 return
             end if
-            w1 = mod(n1, d1)
-            w2 = mod(n2, d2)
-            l1 = w1 == 0
-            l2 = w2 == 0
+            i1 = mod(n1, d1)
+            i2 = mod(n2, d2)
+            l1 = i1 == 0
+            l2 = i2 == 0
             if (l1 .or. l2) then
                 r = l1 .and. .not. l2
                 return
             end if
             n1 = d2
             n2 = d1
-            d1 = w2
-            d2 = w1
+            d1 = i2
+            d2 = i1
         end do
     end function ordered_rationals
 

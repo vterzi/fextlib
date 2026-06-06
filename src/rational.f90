@@ -629,10 +629,10 @@ contains
     end function I_cat_I
 
 
-    elemental function abs_Rational(x) result(r)
-        class(Rational), intent(in) :: x
+    elemental function abs_Rational(a) result(r)
+        class(Rational), intent(in) :: a
         type(Rational) :: r
 
-        r%n = abs(x%n)
+        r%n = abs(a%n)
     end function abs_Rational
 end module extlib_rational

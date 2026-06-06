@@ -180,6 +180,28 @@ contains
     end function ordered_rationals
 
 
+    elemental function ordered_rational_integer(xn, xd, y) result(r)
+        integer, intent(in) :: xn, xd, y
+        logical :: r
+
+        integer :: x
+
+        x = xn / xd
+        r = x < y .or. (x == y .and. xn < 0 .and. mod(xn, xd) < 0)
+    end function ordered_rational_integer
+
+
+    elemental function ordered_integer_rational(x, yn, yd) result(r)
+        integer, intent(in) :: x, yn, yd
+        logical :: r
+
+        integer :: y
+
+        y = yn / yd
+        r = x < y .or. (x == y .and. yn > 0 .and. mod(yn, yd) > 0)
+    end function ordered_integer_rational
+
+
     elemental subroutine canonicalize_Rational(x)
         class(Rational), intent(inout) :: x
 
@@ -451,7 +473,8 @@ contains
         class(Rational), intent(in) :: x
         logical :: r
 
-        r = i * x%d > x%n
+        ! r = i * x%d > x%n
+        r = ordered_rational_integer(x%n, x%d, i)
     end function I_gt_Rational
 
 
@@ -460,7 +483,8 @@ contains
         integer, intent(in) :: i
         logical :: r
 
-        r = x%n > i * x%d
+        ! r = x%n > i * x%d
+        r = ordered_integer_rational(i, x%n, x%d)
     end function Rational_gt_I
 
 
@@ -469,7 +493,8 @@ contains
         class(Rational), intent(in) :: x
         logical :: r
 
-        r = i * x%d < x%n
+        ! r = i * x%d < x%n
+        r = ordered_integer_rational(i, x%n, x%d)
     end function I_lt_Rational
 
 
@@ -478,7 +503,8 @@ contains
         integer, intent(in) :: i
         logical :: r
 
-        r = x%n < i * x%d
+        ! r = x%n < i * x%d
+        r = ordered_rational_integer(x%n, x%d, i)
     end function Rational_lt_I
 
 
@@ -487,7 +513,7 @@ contains
         class(Rational), intent(in) :: x
         logical :: r
 
-        r = i * x%d >= x%n
+        r = I_eq_Rational(i, x) .or. I_gt_Rational(i, x)
     end function I_ge_Rational
 
 
@@ -496,7 +522,7 @@ contains
         integer, intent(in) :: i
         logical :: r
 
-        r = x%n >= i * x%d
+        r = Rational_eq_I(x, i) .or. Rational_gt_I(x, i)
     end function Rational_ge_I
 
 
@@ -505,7 +531,7 @@ contains
         class(Rational), intent(in) :: x
         logical :: r
 
-        r = i * x%d <= x%n
+        r = I_eq_Rational(i, x) .or. I_lt_Rational(i, x)
     end function I_le_Rational
 
 
@@ -514,7 +540,7 @@ contains
         integer, intent(in) :: i
         logical :: r
 
-        r = x%n <= i * x%d
+        r = Rational_eq_I(x, i) .or. Rational_lt_I(x, i)
     end function Rational_le_I
 
 

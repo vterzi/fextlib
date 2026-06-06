@@ -352,8 +352,18 @@ contains
         class(Rational), intent(in) :: x, y
         type(Rational) :: r
 
+#if _FAST
         r%n = x%n * y%d + x%d * y%n
         r%d = x%d * y%d
+#else
+        integer :: d, xd, yd
+
+        d = gcd(x%d, y%d)
+        xd = x%d / d
+        yd = y%d / d
+        r%n = x%n * yd + xd * y%n
+        r%d = x%d * yd
+#endif
         call r%reduce()
     end function Rational_add_Rational
 
@@ -362,8 +372,18 @@ contains
         class(Rational), intent(in) :: x, y
         type(Rational) :: r
 
+#if _FAST
         r%n = x%n * y%d - x%d * y%n
         r%d = x%d * y%d
+#else
+        integer :: d, xd, yd
+
+        d = gcd(x%d, y%d)
+        xd = x%d / d
+        yd = y%d / d
+        r%n = x%n * yd - xd * y%n
+        r%d = x%d * yd
+#endif
         call r%reduce()
     end function Rational_sub_Rational
 
@@ -372,9 +392,18 @@ contains
         class(Rational), intent(in) :: x, y
         type(Rational) :: r
 
+#if _FAST
         r%n = x%n * y%n
         r%d = x%d * y%d
         call r%reduce()
+#else
+        integer :: d1, d2
+
+        d1 = gcd(x%n, y%d)
+        d2 = gcd(y%n, x%d)
+        r%n = (x%n / d1) * (y%n / d2)
+        r%d = (x%d / d2) * (y%d / d1)
+#endif
     end function Rational_mul_Rational
 
 
@@ -382,9 +411,19 @@ contains
         class(Rational), intent(in) :: x, y
         type(Rational) :: r
 
+#if _FAST
         r%n = x%n * y%d
         r%d = x%d * y%n
         call r%normalize()
+#else
+        integer :: d1, d2
+
+        d1 = gcd(x%n, y%n)
+        d2 = gcd(y%d, x%d)
+        r%n = (x%n / d1) * (y%d / d2)
+        r%d = (x%d / d2) * (y%n / d1)
+        call r%canonicalize()
+#endif
     end function Rational_div_Rational
 
 
@@ -607,9 +646,17 @@ contains
         class(Rational), intent(in) :: x
         type(Rational) :: r
 
+#ifdef _FAST
         r%n = i * x%n
         r%d = x%d
         call r%reduce()
+#else
+        integer :: d
+
+        d = gcd(i, x%d)
+        r%n = (i / d) * x%n
+        r%d = x%d / d
+#endif
     end function I_mul_Rational
 
 
@@ -618,9 +665,17 @@ contains
         integer, intent(in) :: i
         type(Rational) :: r
 
+#ifdef _FAST
         r%n = x%n * i
         r%d = x%d
         call r%reduce()
+#else
+        integer :: d
+
+        d = gcd(x%d, i)
+        r%n = x%n * (i / d)
+        r%d = x%d / d
+#endif
     end function Rational_mul_I
 
 
@@ -629,9 +684,18 @@ contains
         class(Rational), intent(in) :: x
         type(Rational) :: r
 
+#ifdef _FAST
         r%n = i * x%d
         r%d = x%n
         call r%normalize()
+#else
+        integer :: d
+
+        d = gcd(i, x%n)
+        r%n = (i / d) * x%d
+        r%d = x%n / d
+        call r%canonicalize()
+#endif
     end function I_div_Rational
 
 
@@ -640,9 +704,18 @@ contains
         integer, intent(in) :: i
         type(Rational) :: r
 
+#ifdef _FAST
         r%n = x%n
         r%d = x%d * i
         call r%normalize()
+#else
+        integer :: d
+
+        d = gcd(x%n, i)
+        r%n = x%n / d
+        r%d = x%d * (i / d)
+        call r%canonicalize()
+#endif
     end function Rational_div_I
 
 
